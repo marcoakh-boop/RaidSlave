@@ -548,9 +548,9 @@ local function BuildLFM(raidLabelForMsg, raidSize, tanksWant, healersWant, srsWa
 end
 
 local function Announce(msg, dryRun, chWorld, chLFG, chYell)
-  if dryRun then RB_Print("|cff33ff99[RaidSlave]:|r " .. msg); return end
+  if dryRun then RB_Print("|cff33ff99RS:|r" .. msg); return end
   if (not chWorld and not chLFG and not chYell) then
-    RB_Print("|cffff6666[RaidSlave]:|r No channel selected (World/LFG/Yell). Printing here instead:\n|cff33ff99[RaidSlave]:|r "..msg)
+    RB_Print("|cffff6666RS:|rNo channel selected (World/LFG/Yell). Printing here instead:\n|cff33ff99RS:|r"..msg)
     return
   end
 
@@ -579,14 +579,14 @@ local function Announce(msg, dryRun, chWorld, chLFG, chYell)
     worldId = FindChanByName("world","World","WORLD") or
               FallbackFind(function(n) return n=="world" end)
     if not worldId then
-      RB_Print("|cffff6666[RaidSlave]:|r You are not in |cffffff00World|r. Use |cffffff00/join world|r.")
+      RB_Print("|cffff6666RS:|rYou are not in |cffffff00World|r. Use |cffffff00/join world|r.")
     end
   end
   if chLFG then
     lfgId = FindChanByName("LookingForGroup","lookingforgroup","LFG","lfg") or
             FallbackFind(function(n) return n=="lfg" or n=="lookingforgroup" or n=="looking for group" end)
     if not lfgId then
-      RB_Print("|cffff6666[RaidSlave]:|r You are not in |cffffff00LookingForGroup|r. Use |cffffff00/join LookingForGroup|r.")
+      RB_Print("|cffff6666RS:|rYou are not in |cffffff00LookingForGroup|r. Use |cffffff00/join LookingForGroup|r.")
     end
   end
 
@@ -594,7 +594,7 @@ local function Announce(msg, dryRun, chWorld, chLFG, chYell)
   if worldId then SendChatMessage(msg, "CHANNEL", nil, worldId); sent = true end
   if lfgId   then SendChatMessage(msg, "CHANNEL", nil, lfgId);   sent = true end
   if chYell  then SendChatMessage(msg, "YELL");                  sent = true end
-  if not sent then RB_Print("|cff33ff99[RaidSlave]:|r " .. msg) end
+  if not sent then RB_Print("|cff33ff99RS:|r" .. msg) end
 end
 
 -------------------------------------------------
@@ -626,7 +626,7 @@ end
 
 local function RB_NudgeAssignRoles(unassigned)
   if not unassigned or unassigned <= 0 then return end
-  local msg = "|cffffd100[RaidSlave]:|r You have |cffffff00" .. unassigned ..
+  local msg = "|cffffd100RS:|rYou have |cffffff00" .. unassigned ..
               "|r unassigned group members. Assign Tank/Healer/DPS in the Raid Roster (Right-click a player to Set Role)."
   RB_After(1, function() RB_Print(msg) end)
 end
@@ -813,11 +813,11 @@ local function RB_AutoInviteUpdateFromUI(source)
   local cf = DEFAULT_CHAT_FRAME or ChatFrame1
   if cf then
     if (enabled ~= RB._aiEnabledLast) and (source == "autoInvite" or source == nil) then
-      cf:AddMessage("|cff33ff99[RaidSlave]:|r Auto-Invite " ..
+      cf:AddMessage("|cff33ff99RS:|rAuto-Invite " ..
         (enabled and "|cff00ff00ENABLED|r" or "|cffff5555DISABLED|r") .. " (Raid Builder).")
     end
     if (autoRoles ~= RB._aiAutoRolesLast) and (source == "autoRoles" or source == nil) then
-      cf:AddMessage("|cff33ff99[RaidSlave]:|r Auto-Assign roles " ..
+      cf:AddMessage("|cff33ff99RS:|rAuto-Assign roles " ..
         (autoRoles and "|cff00ff00ENABLED|r" or "|cffff5555DISABLED|r") .. " (Raid Builder).")
     end
   end
@@ -1122,7 +1122,7 @@ local function RB_CheckAndStopIfFull()
     RB.SaveState()
     RB.UpdateButtonsForRunning()
     local inRaid = RB_RaidCount()
-    RB_Print("|cff33ff99[RaidSlave]:|r Auto-announce disabled: raid is full ("..inRaid.."/"..(target or "?")..") based on current needs. Assign roles in the Raid Roster for accuracy.")
+    RB_Print("|cff33ff99RS:|rAuto-announce disabled: raid is full ("..inRaid.."/"..(target or "?")..") based on current needs. Assign roles in the Raid Roster for accuracy.")
     return true
   end
   return false
@@ -1255,7 +1255,7 @@ end
 -- Button handlers
 -------------------------------------------------
 local function OnCloseClick()
-  if RB.state.running then RB_Print("|cffff6666[RaidSlave]:|r Stop auto-announce before closing."); return end
+  if RB.state.running then RB_Print("|cffff6666RS:|rStop auto-announce before closing."); return end
   RB.frame:Hide()
 end
 
@@ -1287,7 +1287,7 @@ local function OnAnnounceClick()
     return
   end
   if not RequirementsComplete() then
-    RB_Print("|cffff6666[RaidSlave]:|r Pick raid (and World Boss / ES mode), size, tanks and healers first.")
+    RB_Print("|cffff6666RS:|rPick raid (and World Boss / ES mode), size, tanks and healers first.")
     return
   end
 
@@ -1314,7 +1314,7 @@ local function OnAnnounceClick()
   local COOLDOWN = 30
   if elapsed < COOLDOWN then
     local left = math.floor(COOLDOWN - elapsed + 0.5)
-    RB_Print("|cffff6666[RaidSlave]:|r Announce is on cooldown ("..left.."s).")
+    RB_Print("|cffff6666RS:|rAnnounce is on cooldown ("..left.."s).")
     return
   end
 
@@ -1345,7 +1345,7 @@ function RaidSlaveRaidBuilder.AnnounceOnce()
 
   if not ReqOK() then
     local cf = DEFAULT_CHAT_FRAME or ChatFrame1
-    if cf then cf:AddMessage("|cffff6666[RaidSlave]:|r Pick raid (and World Boss / ES mode), size, tanks and healers first.") end
+    if cf then cf:AddMessage("|cffff6666RS:|rPick raid (and World Boss / ES mode), size, tanks and healers first.") end
     return
   end
 
@@ -1355,7 +1355,7 @@ function RaidSlaveRaidBuilder.AnnounceOnce()
   if elapsed < COOLDOWN then
     local left = math.floor(COOLDOWN - elapsed + 0.5)
     local cf = DEFAULT_CHAT_FRAME or ChatFrame1
-    if cf then cf:AddMessage("|cffff6666[RaidSlave]:|r Announce is on cooldown ("..left.."s).") end
+    if cf then cf:AddMessage("|cffff6666RS:|rAnnounce is on cooldown ("..left.."s).") end
     return
   end
 
@@ -1642,7 +1642,7 @@ function RB.Open()
       RB.InitPresetDropdowns()
       return
     end
-    RB_Print("|cffff6666[RaidSlave]:|r Enter a name to Save, or pick a preset to Load/Remove.")
+    RB_Print("|cffff6666RS:|rEnter a name to Save, or pick a preset to Load/Remove.")
   end)
 
   RB.editPresetName:SetScript("OnTextChanged", RB_UpdatePresetButtonText)
@@ -1922,18 +1922,18 @@ end)
 
   -- How-it-works + list (no "enabled" line here)
   local function PrintGearHowItWorks()
-    RB_Print("|cff33ff99[RaidSlave]:|r Players will be asked to grade their gear from 0 to 5. They may reply with a number (e.g. '2') or a range (e.g. '2-3'). Ranges use the average; 1-3 = 2 while 1-2 = 1 (0.5 rounds down).")
-    RB_Print("|cff33ff99[RaidSlave]:|r Grade Gear Scale:")
-    RB_Print("|cff33ff99[RaidSlave]:|r 0 – Starter / Dungeon blues")
-    RB_Print("|cff33ff99[RaidSlave]:|r 1 – ZG / AQ20 / MC")
-    RB_Print("|cff33ff99[RaidSlave]:|r 2 – BWL / ES / Kara10")
-    RB_Print("|cff33ff99[RaidSlave]:|r 3 – AQ40 / T2.5")
-    RB_Print("|cff33ff99[RaidSlave]:|r 4 – Naxx / T3")
-    RB_Print("|cff33ff99[RaidSlave]:|r 5 – Kara40 / T3.5")
+    RB_Print("|cff33ff99RS:|rPlayers will be asked to grade their gear from 0 to 5. They may reply with a number (e.g. '2') or a range (e.g. '2-3'). Ranges use the average; 1-3 = 2 while 1-2 = 1 (0.5 rounds down).")
+    RB_Print("|cff33ff99RS:|rGrade Gear Scale:")
+    RB_Print("|cff33ff99RS:|r0 – Starter / Dungeon blues")
+    RB_Print("|cff33ff99RS:|r1 – ZG / AQ20 / MC")
+    RB_Print("|cff33ff99RS:|r2 – BWL / ES / Kara10")
+    RB_Print("|cff33ff99RS:|r3 – AQ40 / T2.5")
+    RB_Print("|cff33ff99RS:|r4 – Naxx / T3")
+    RB_Print("|cff33ff99RS:|r5 – Kara40 / T3.5")
   end
   -- Final full-green enabled line
   local function PrintGearEnabled()
-    RB_Print("|cff33ff99[RaidSlave]:|r Auto-Gearcheck |cff00ff00ENABLED|r.")
+    RB_Print("|cff33ff99RS:|rAuto-Gearcheck |cff00ff00ENABLED|r.")
   end
 
 RB.cbGear:SetScript("OnClick", function()
@@ -1946,7 +1946,7 @@ RB.cbGear:SetScript("OnClick", function()
     RB.SaveState()
     RB_SyncInviteExtras()
     PrintGearHowItWorks()
-    RB_Print("|cffff6666[RaidSlave]:|r You need to select |cffffff00Required Gear|r (minimum gear scale) before enabling Auto-Gearcheck.")
+    RB_Print("|cffff6666RS:|rYou need to select |cffffff00Required Gear|r (minimum gear scale) before enabling Auto-Gearcheck.")
     return
   end
 
@@ -1958,7 +1958,7 @@ RB.cbGear:SetScript("OnClick", function()
     PrintGearHowItWorks()
     PrintGearEnabled()
   elseif (not want) and prev then
-    RB_Print("|cff33ff99[RaidSlave]:|r Auto-Gearcheck |cffff5555DISABLED|r.")
+    RB_Print("|cff33ff99RS:|rAuto-Gearcheck |cffff5555DISABLED|r.")
   end
 end)
 
@@ -2019,14 +2019,14 @@ end)
     local dc = RB_Trim(RB.state.discordLink or "")
     if sr == "" and dc == "" then return end
     if not RB_IsLeaderOrAssist() then
-      RB_Print("|cffff6666[RaidSlave]:|r You must be raid leader or assist to post raid warnings.")
+      RB_Print("|cffff6666RS:|rYou must be raid leader or assist to post raid warnings.")
       return
     end
     if sr ~= "" then
-      SendChatMessage("[RaidSlave] - SR link: " .. sr, "RAID_WARNING")
+      SendChatMessage("SR link: " .. sr, "RAID_WARNING")
     end
     if dc ~= "" then
-      SendChatMessage("[RaidSlave] - Join Discord: " .. dc, "RAID_WARNING")
+      SendChatMessage("Join Discord: " .. dc, "RAID_WARNING")
     end
   end
   RB.btnSRDPost:SetScript("OnClick", RB_PostSRDiscord)
@@ -2153,15 +2153,15 @@ end
 -------------------------------------------------
 function RB.SavePreset(name)
   name = RB_Trim(name)
-  if name == "" then RB_Print("|cffff6666[RaidSlave]:|r Enter a preset name to save."); return end
+  if name == "" then RB_Print("|cffff6666RS:|rEnter a preset name to save."); return end
   local db = PresetsDB()
   db[name] = RB_SnapshotForPreset()
-  RB_Print("|cff33ff99[RaidSlave]:|r Preset saved: |cffffff00"..name.."|r.")
+  RB_Print("|cff33ff99RS:|rPreset saved: |cffffff00"..name.."|r.")
 end
 
 function RB.LoadPreset(name)
   local p = PresetsDB()[name]
-  if not p then RB_Print("|cffff6666[RaidSlave]:|r Preset not found: "..tostring(name)); return end
+  if not p then RB_Print("|cffff6666RS:|rPreset not found: "..tostring(name)); return end
 
   RB.state.raid        = p.raid
   RB.state.worldBoss   = p.worldBoss
@@ -2257,14 +2257,14 @@ function RB.LoadPreset(name)
   RB.RefreshPreview()
   RB_SyncInviteExtras()
   RB_AutoInviteUpdateFromUI()
-  RB_Print("|cff33ff99[RaidSlave]:|r Preset loaded: |cffffff00"..name.."|r.")
+  RB_Print("|cff33ff99RS:|rPreset loaded: |cffffff00"..name.."|r.")
 end
 
 function RB.RemovePreset(name)
   local db = PresetsDB()
-  if not db[name] then RB_Print("|cffff6666[RaidSlave]:|r Preset not found: "..tostring(name)); return end
+  if not db[name] then RB_Print("|cffff6666RS:|rPreset not found: "..tostring(name)); return end
   db[name] = nil
-  RB_Print("|cff33ff99[RaidSlave]:|r Preset removed: |cffffff00"..name.."|r.")
+  RB_Print("|cff33ff99RS:|rPreset removed: |cffffff00"..name.."|r.")
 end
 
 -------------------------------------------------

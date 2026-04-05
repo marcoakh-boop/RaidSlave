@@ -231,7 +231,7 @@ function RaidSlaveRaidRoles_SetPresetMasterLooter(nameOrEmpty)
     local me = UnitName and UnitName("player") or ""
     local whisperOn = (RaidSlaveDB and RaidSlaveDB.Settings and RaidSlaveDB.Settings.RoleWhisperEnabled ~= false)
     if whisperOn and me ~= "" and name ~= me and UnitInRaid("player") and IsSelfRaidLeader() then
-      SendChatMessage("[RaidSlave]: You have been selected as preset masterlooter. If masterloot is turned on, you will automatically receive the role.", "WHISPER", nil, name)
+      SendChatMessage("You have been selected as preset masterlooter. If masterloot is turned on, you will automatically receive the role.", "WHISPER", nil, name)
     end
   end
   if type(RaidSlave_DecorateRaidRoster) == "function" then RaidSlave_DecorateRaidRoster() end
@@ -462,13 +462,13 @@ local function HandleMenuClick()
         if canWhisper then
           local w
           if newRole == "H" then
-            w = "[RaidSlave]: You are marked as 'H' (Healer) on the raid roster."
+            w = "You are marked as 'H' (Healer) on the raid roster."
           elseif newRole == "T" then
-            w = "[RaidSlave]: You are marked as 'T' (Tank) on the raid roster."
+            w = "You are marked as 'T' (Tank) on the raid roster."
           elseif newRole == "D" then
-            w = "[RaidSlave]: You are marked as 'D' (DPS) on the raid roster."
+            w = "You are marked as 'D' (DPS) on the raid roster."
           else
-            w = "[RaidSlave]: You are no longer marked on the raid roster."
+            w = "You are no longer marked on the raid roster."
           end
           if SendChatMessage then
             SendChatMessage(w, "WHISPER", nil, name)

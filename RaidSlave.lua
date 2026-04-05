@@ -287,11 +287,11 @@ end
 -- PRINT HELPERS
 -------------------------------------------------
 function RaidSlave:PrintMessage(msg)
-  DEFAULT_CHAT_FRAME:AddMessage(RS_TITLE_COLOR .. "RaidSlave:|r " .. msg)
+  DEFAULT_CHAT_FRAME:AddMessage(RS_TITLE_COLOR .. "RS:|r " .. msg)
 end
 
 function RaidSlave:PrintError(msg)
-  DEFAULT_CHAT_FRAME:AddMessage("|cffff0000RaidSlave Error:|r " .. msg)
+  DEFAULT_CHAT_FRAME:AddMessage("|cffff0000RS Error:|r " .. msg)
 end
 
 -------------------------------------------------
@@ -324,7 +324,7 @@ function RaidSlave:PostRoleSummary()
 
   local function postNames(label, list)
     local cnt  = (table.getn and table.getn(list)) or 0
-    local base = string.format("[RaidSlave]: %s - [%d]: ", label, cnt)
+    local base = string.format("%s - [%d]: ", label, cnt)
     local cur  = base
     local n    = (table.getn and table.getn(list)) or 0
 
@@ -347,7 +347,7 @@ function RaidSlave:PostRoleSummary()
   local nH = (table.getn and table.getn(healers)) or 0
   local dpsTotal = total - nT - nH
   if dpsTotal < 0 then dpsTotal = 0 end
-  SendChatMessage(string.format("[RaidSlave]: DPS - [%d]: The rest of the raid.", dpsTotal), "RAID")
+  SendChatMessage(string.format("DPS - [%d]: The rest of the raid.", dpsTotal), "RAID")
 end
 
 -------------------------------------------------
@@ -906,7 +906,7 @@ rsEventFrame:SetScript("OnEvent", function()
     InitializeSavedVariables()
     RunLater(1, function()
       local cf = DEFAULT_CHAT_FRAME or ChatFrame1
-      cf:AddMessage(RS_TITLE_COLOR .. "RaidSlave|r loaded. Use |cffffff00/rs|r or click the minimap icon.")
+      cf:AddMessage(RS_TITLE_COLOR .. "RS|r loaded. Use |cffffff00/rs|r or click the minimap icon.")
     end)
   end
 end)

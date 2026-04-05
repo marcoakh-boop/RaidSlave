@@ -64,7 +64,7 @@ INV.ui            = { edit=nil, cb=nil, btn=nil, off=nil }
 
 -- helpers
 local function now() return (GetTime and GetTime()) or 0 end
-local function cfmsg(m) local cf=DEFAULT_CHAT_FRAME or ChatFrame1; if cf then cf:AddMessage("|cff33ff99[RaidSlave]:|r "..m) end end
+local function cfmsg(m) local cf=DEFAULT_CHAT_FRAME or ChatFrame1; if cf then cf:AddMessage("|cff33ff99RS:|r"..m) end end
 local function say(to, msg) if to and msg and SendChatMessage then SendChatMessage(msg,"WHISPER",nil,to) end end
 local function trim(s) s=s or ""; s=string.gsub(s,"^%s+",""); s=string.gsub(s,"%s+$",""); return s end
 local function lower(s) return string.lower(s or "") end
@@ -655,7 +655,7 @@ end
 local function inviteAndMaybeAssign(name, role, doAssign, skipCapacity)
   -- Capacity (RB) guard
   if role and (not skipCapacity) and not rbHasRoom(role) then
-    say(name, "[RaidSlave]: Thanks! We are currently full on "..string.lower(role)..".")
+    say(name, "Thanks! We are currently full on "..string.lower(role)..".")
     return
   end
 
@@ -782,16 +782,16 @@ local function StartGearcheck(name)
 
   -- if currently active prompt exists, don't re-spam the entire scale
   if INV._gearAsked[name] and active then
-    say(name, "[RaidSlave]: Please reply only with a number 0-5, or a range like '2-3'.")
+    say(name, "Please reply only with a number 0-5, or a range like '2-3'.")
     return true
   end
 
   -- (re)start full prompt (handles stale session where _gearAsked was set but timer expired)
   INV._gearAsked[name] = true
-  local intro = "[RaidSlave]: Gearcheck – please grade the MAJORITY of your gear (9+/18 itemslots) using the scale below. Reply only with a single number (e.g. '2' or '3') or a range (e.g. '2-3')."
+  local intro = "Gearcheck – please grade the MAJORITY of your gear (9+/18 itemslots) using the scale below. Reply only with a single number (e.g. '2' or '3') or a range (e.g. '2-3')."
   say(name, intro)
   -- Compressed scale into a single summary line
-  say(name, "[RaidSlave]: (0)=Blues / (1)=ZG-AQ20-MC / (2)=BWL-T2 / (3)=AQ40-T2.5 / (4)=Naxx-T3 / (5)=K40-T3.5")
+  say(name, "(0)=Blues / (1)=ZG-AQ20-MC / (2)=BWL-T2 / (3)=AQ40-T2.5 / (4)=Naxx-T3 / (5)=K40-T3.5")
   INV.awaitingGear[name] = tNow + AWAIT_GEAR_SEC
   return true
 end
@@ -827,7 +827,7 @@ local function ContinueAfterGear(name, passed)
   INV._gearAfterRole[name] = nil
   INV._gearPending[name] = nil
   if not passed then
-    say(name, "[RaidSlave]: Thank you! For this raid, however, we are prioritizing higher gear. Please check future raids.")
+    say(name, "Thank you! For this raid, however, we are prioritizing higher gear. Please check future raids.")
     INV._sessionIgnores[lower(name)] = true
     return
   end
@@ -856,7 +856,7 @@ if not INV._watch then
         INV._gearAfterRole[name] = nil
         INV._gearPending[name] = nil
         if INV._gearTimeoutRemind then
-          say(name, "[RaidSlave]: Gearcheck timed out. Whisper again to continue.")
+          say(name, "Gearcheck timed out. Whisper again to continue.")
         end
       end
     end
@@ -926,7 +926,7 @@ local function handleActive(author, msg, keyword, autoAssign, rbMode)
       inviteAndMaybeAssign(author, rolePicked, true, false)
       return
     end
-    local prompt = "[RaidSlave]: What role are you? ("..RoleLettersToPrompt(allowed)..")"
+    local prompt = "What role are you? ("..RoleLettersToPrompt(allowed)..")"
     say(author, prompt)
     INV.awaitingRole[author] = now() + AWAIT_SEC
     INV.awaitCtx[author]     = "active"
@@ -939,7 +939,7 @@ local function handleActive(author, msg, keyword, autoAssign, rbMode)
 
   -- Standalone path unchanged beyond here
   if offered and table.getn(offered) >= 2 then
-    local prompt = "[RaidSlave]: What role are you? ("..RoleLettersToPrompt(allowed).."). Please reply with ONE role only."
+    local prompt = "What role are you? ("..RoleLettersToPrompt(allowed).."). Please reply with ONE role only."
     say(author, prompt)
     INV.awaitingRole[author] = now() + AWAIT_SEC
     INV.awaitCtx[author]     = "active-single"
@@ -956,7 +956,7 @@ local function handleActive(author, msg, keyword, autoAssign, rbMode)
     return
   end
 
-  local prompt = "[RaidSlave]: What role are you? ("..RoleLettersToPrompt(allowed).."). Please reply with ONE role only."
+  local prompt = "What role are you? ("..RoleLettersToPrompt(allowed).."). Please reply with ONE role only."
   say(author, prompt)
   INV.awaitingRole[author] = now() + AWAIT_SEC
   INV.awaitCtx[author]     = "active-single"
@@ -1007,9 +1007,9 @@ local function handleRBConfirmAsk(author, msg)
     QueueShowNext(); return
   elseif offeredLetters and table.getn(offeredLetters) >= 1 then
     if table.getn(offeredLetters) == 1 then
-      say(author, "[RaidSlave]: Thanks! We are currently full on "..string.lower(LETTER2ROLE[offeredLetters[1]])..".")
+      say(author, "Thanks! We are currently full on "..string.lower(LETTER2ROLE[offeredLetters[1]])..".")
     else
-      say(author, "[RaidSlave]: Thanks! We are currently full on the roles you mentioned.")
+      say(author, "Thanks! We are currently full on the roles you mentioned.")
     end
     return
   end
@@ -1271,7 +1271,7 @@ local function onWhisperReply(author, msg)
     local val = ParseGearReply(msg)
     INV._gearRatings[author] = val
     if val == nil then
-      say(author, "[RaidSlave]: Please reply with a number 0-5, or a range like '2-3', using the gear scale above.")
+      say(author, "Please reply with a number 0-5, or a range like '2-3', using the gear scale above.")
       INV.awaitingGear[author] = now() + AWAIT_GEAR_SEC
       return true
     end
@@ -1304,7 +1304,7 @@ local function onWhisperReply(author, msg)
     end
 
     if table.getn(letters) ~= 1 then
-      local prompt = "[RaidSlave]: Please reply with ONE role only: "..RoleLettersToPrompt(allowed).."."
+      local prompt = "Please reply with ONE role only: "..RoleLettersToPrompt(allowed).."."
       say(author, prompt)
       INV.awaitingRole[author] = now() + AWAIT_SEC
       INV.awaitCtx[author]     = "active-single"
@@ -1340,15 +1340,15 @@ local function onWhisperReply(author, msg)
 
     if letters and table.getn(letters) >= 1 then
       if table.getn(letters) == 1 then
-        say(author, "[RaidSlave]: Thanks! We are currently full on "..string.lower(LETTER2ROLE[letters[1]])..".")
+        say(author, "Thanks! We are currently full on "..string.lower(LETTER2ROLE[letters[1]])..".")
       else
-        say(author, "[RaidSlave]: Thanks! We are currently full on the roles you mentioned.")
+        say(author, "Thanks! We are currently full on the roles you mentioned.")
       end
       return true
     end
 
     local allowed2 = AllowedRolesForClass(classHint2)
-    say(author, "[RaidSlave]: Please reply with: "..RoleLettersToPrompt(allowed2)..".")
+    say(author, "Please reply with: "..RoleLettersToPrompt(allowed2)..".")
     INV.awaitingRole[author] = now() + AWAIT_SEC
     INV.awaitCtx[author]     = "active"
     INV.lastPrompt[author]   = { allowed = allowed2 }
@@ -1382,9 +1382,9 @@ local function onWhisperReply(author, msg)
     else
       if letters and table.getn(letters) >= 1 then
         if table.getn(letters) == 1 then
-          say(author, "[RaidSlave]: Thanks! We are currently full on "..string.lower(LETTER2ROLE[letters[1]])..".")
+          say(author, "Thanks! We are currently full on "..string.lower(LETTER2ROLE[letters[1]])..".")
         else
-          say(author, "[RaidSlave]: Thanks! We are currently full on the roles you mentioned.")
+          say(author, "Thanks! We are currently full on the roles you mentioned.")
         end
         return true
       end
@@ -1396,11 +1396,11 @@ local function onWhisperReply(author, msg)
           end
           QueuePush(author, role, classHint, nil, true); QueueShowNext()
         else
-          say(author, "[RaidSlave]: Thanks! We are currently full on "..string.lower(role)..".")
+          say(author, "Thanks! We are currently full on "..string.lower(role)..".")
         end
       else
         local allowed2 = AllowedRolesForClass(classHint)
-        say(author, "[RaidSlave]: Please reply with: "..RoleLettersToPrompt(allowed2)..".")
+        say(author, "Please reply with: "..RoleLettersToPrompt(allowed2)..".")
         INV.awaitingRole[author] = now() + AWAIT_SEC
         INV.awaitCtx[author]     = "rb-confirm"
         INV.lastPrompt[author]   = { allowed = allowed2 }
@@ -1439,7 +1439,7 @@ local function FlushPendingRolesInGroup()
 
       local let = ROLE_LET[role] or "?"
       local rnm = ROLE_NAME[role] or role or "?"
-      say(nm, "[RaidSlave]: You are marked as '"..let.."' ("..rnm..") in the group list.")
+      say(nm, "You are marked as '"..let.."' ("..rnm..") in the group list.")
 
       INV.pendingRoles[nm] = nil
       refreshRolesUI()
@@ -1498,7 +1498,7 @@ INV._evt:SetScript("OnEvent", function()
       INV._groupWarned = INV._groupWarned or {}
       if not INV._groupWarned[lname] then
         if INV_IsActive() then
-          say(name, "[RaidSlave]: You are in group - please leave and write to me again.")
+          say(name, "You are in group - please leave and write to me again.")
         end
         INV._groupWarned[lname] = true
       end
