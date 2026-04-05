@@ -28,7 +28,7 @@ local MARKS = {
 -- Helpers
 -- ============================================================
 local function Print(msg)
-  DEFAULT_CHAT_FRAME:AddMessage("|cffff6600[RaidSlave Tank]|r " .. msg)
+  DEFAULT_CHAT_FRAME:AddMessage("|cffff6600RS Tank:|r " .. msg)
 end
 
 local function InitDB()
@@ -38,6 +38,7 @@ local function InitDB()
   if not TA.tanks then TA.tanks = {} end
   if not TA.customText then TA.customText = "" end
   if not TA.button then TA.button = { x = 0, y = 0, locked = false } end
+  if not TA.mainTank then TA.mainTank = 0 end
   for i = 1, MAX_TANKS do
     if not TA.tanks[i] then
       TA.tanks[i] = { name = "", marks = {} }
@@ -89,7 +90,8 @@ local function BuildAssignmentLines()
           if mi > 1 then markLine = markLine .. ", " end
           markLine = markLine .. ms
         end
-        table.insert(lines, tank.name .. "  >>  " .. markLine)
+        local prefix = (db.mainTank == i) and "[MT] " or "[OT] "
+        table.insert(lines, prefix .. tank.name .. "  >>  " .. markLine)
       end
     end
   end
@@ -132,7 +134,7 @@ end
 -- ============================================================
 -- Config Panel
 -- ============================================================
-local cfgW = 470
+local cfgW = 490
 local cfgH = 490  -- taller for 8 rows
 local configPanel = CreateFrame("Frame", "RaidSlaveTankConfig", UIParent)
 configPanel:SetWidth(cfgW)
@@ -188,8 +190,12 @@ local headerName = configPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalS
 headerName:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 22, -56)
 headerName:SetText("|cffFFD100Tank Name|r")
 
+local headerMT = configPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+headerMT:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 128, -56)
+headerMT:SetText("|cffFFD100MT|r")
+
 local headerMarks = configPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-headerMarks:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 150, -56)
+headerMarks:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 160, -56)
 headerMarks:SetText("|cffFFD100Marks|r")
 
 -- ============================================================
@@ -257,6 +263,22 @@ local function CreateMarkButton(parentRow, rowIdx, markIdx, xOff, yOff)
   return markBtn, iconTex, hlTex
 end
 
+local function UpdateMTButtons()
+  local db = GetDB()
+  for i = 1, MAX_TANKS do
+    local row = tankRows[i]
+    if row and row.mtBtn then
+      if db.mainTank == i then
+        row.mtBtn.rsTex:SetVertexColor(1, 0.82, 0)
+        row.mtBtn.rsLabel:SetText("|cffFFD100MT|r")
+      else
+        row.mtBtn.rsTex:SetVertexColor(0.3, 0.3, 0.3)
+        row.mtBtn.rsLabel:SetText("|cff666666MT|r")
+      end
+    end
+  end
+end
+
 local function CreateTankRow(rowIdx)
   local yOff = ROW_START_Y - (rowIdx - 1) * ROW_HEIGHT
   local rowData = { markBtns = {}, markHighlights = {} }
@@ -266,7 +288,7 @@ local function CreateTankRow(rowIdx)
   rowNum:SetText("|cff888888" .. rowIdx .. "|r")
 
   local nameBox = CreateFrame("EditBox", "RaidSlaveTankName" .. rowIdx, configPanel, "InputBoxTemplate")
-  nameBox:SetWidth(NAME_WIDTH)
+  nameBox:SetWidth(NAME_WIDTH - 10)
   nameBox:SetHeight(20)
   nameBox:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 28, yOff)
   nameBox:SetAutoFocus(false)
@@ -285,8 +307,47 @@ local function CreateTankRow(rowIdx)
 
   rowData.nameBox = nameBox
 
+  -- MT toggle button
+  local mtBtn = CreateFrame("Button", "RaidSlaveTankMT" .. rowIdx, configPanel)
+  mtBtn:SetWidth(22)
+  mtBtn:SetHeight(22)
+  mtBtn:SetPoint("TOPLEFT", configPanel, "TOPLEFT", 128, yOff)
+  mtBtn.rsRow = rowIdx
+
+  local mtTex = mtBtn:CreateTexture(nil, "BACKGROUND")
+  mtTex:SetTexture("Interface\\Buttons\\UI-Quickslot2")
+  mtTex:SetAllPoints(mtBtn)
+  mtTex:SetVertexColor(0.3, 0.3, 0.3)
+  mtBtn.rsTex = mtTex
+
+  local mtLabel = mtBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+  mtLabel:SetPoint("CENTER", mtBtn, "CENTER", 0, 0)
+  mtLabel:SetText("|cff666666MT|r")
+  mtBtn.rsLabel = mtLabel
+
+  mtBtn:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
+
+  mtBtn:SetScript("OnClick", function()
+    local db = GetDB()
+    if db.mainTank == this.rsRow then
+      db.mainTank = 0
+    else
+      db.mainTank = this.rsRow
+    end
+    UpdateMTButtons()
+  end)
+
+  mtBtn:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(this, "ANCHOR_TOP")
+    GameTooltip:AddLine("Toggle Main Tank")
+    GameTooltip:Show()
+  end)
+  mtBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+  rowData.mtBtn = mtBtn
+
   for mi = 1, 8 do
-    local xOff = 150 + (mi - 1) * (MARK_SIZE + MARK_GAP)
+    local xOff = 160 + (mi - 1) * (MARK_SIZE + MARK_GAP)
     local btn, iconTex, hlTex = CreateMarkButton(rowData, rowIdx, mi, xOff, yOff)
     rowData.markBtns[mi] = btn
     rowData.markHighlights[mi] = { icon = iconTex, highlight = hlTex }
@@ -391,6 +452,7 @@ local function RefreshConfig()
     end
   end
   customBox:SetText(db.customText or "")
+  UpdateMTButtons()
 end
 
 -- ============================================================
@@ -419,6 +481,7 @@ clearBtn:SetScript("OnClick", function()
     db.tanks[i] = { name = "", marks = {} }
   end
   db.customText = ""
+  db.mainTank = 0
   RefreshConfig()
   Print("All assignments cleared.")
 end)
