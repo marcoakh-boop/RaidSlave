@@ -63,6 +63,145 @@ RaidSlave = {
 local RS_TITLE_COLOR = "|cffff6600"
 
 -------------------------------------------------
+-- ALIASES (short names for raids/bosses, used by Raid Builder)
+-------------------------------------------------
+RaidSlave.Aliases = {
+  -- Raids
+  ["mc"] = "Molten Core",
+  ["bwl"] = "Blackwing Lair",
+  ["zg"] = "Zul'Gurub",
+  ["aq20"] = "Ruins of Ahn'Qiraj",
+  ["aq40"] = "Temple of Ahn'Qiraj",
+  ["ony"] = "Onyxia's Lair",
+  ["es"] = "Emerald Sanctum",
+  ["naxx"] = "Naxxramas",
+  ["kara10"] = "Lower Karazhan Halls",
+  ["kara40"] = "Upper Karazhan Halls",
+  ["th"] = "Timbermaw Hold",
+  ["world"] = "World Bosses",
+  -- Bosses
+  ["rag"] = "Ragnaros",
+  ["mag"] = "Magmadar",
+  ["geddon"] = "Baron Geddon",
+  ["shaz"] = "Shazzrah",
+  ["sulfuron"] = "Sulfuron Harbinger",
+  ["thaurissan"] = "Sorcerer-thane Thaurissan",
+  ["golemagg"] = "Golemagg the Incinerator",
+  ["majordomo"] = "Majordomo Executus",
+  ["razorgore"] = "Razorgore the Untamed",
+  ["broodlord"] = "Broodlord Lashlayer",
+  ["ebon"] = "Ebonroc",
+  ["fire"] = "Firemaw",
+  ["flame"] = "Flamegor",
+  ["chrom"] = "Chromaggus",
+  ["vael"] = "Vaelastrasz the Corrupt",
+  ["nef"] = "Nefarian",
+  ["venoxis"] = "High Priest Venoxis",
+  ["mandokir"] = "Bloodlord Mandokir",
+  ["jindo"] = "Jin'do the Hexxer",
+  ["kur"] = "Kurinnaxx",
+  ["rajaxx"] = "General Rajaxx",
+  ["skeram"] = "The Prophet Skeram",
+  ["cthun"] = "C'Thun",
+  ["patch"] = "Patchwerk",
+  ["thadd"] = "Thaddius",
+  ["azu"] = "Azuregos",
+  ["kazzak"] = "Lord Kazzak",
+  ["chess"] = "King (Chess)",
+  ["sanv"] = "Sanv Tas'dal",
+  ["rupturan"] = "Rupturan the Broken",
+  ["meph"] = "Mephistroth",
+  ["medivh"] = "Echo of Medivh",
+  ["incantagos"] = "Lay-Watcher Incantagos",
+  ["gnarlmoon"] = "Keeper Gnarlmoon",
+  ["solnius"] = "Solnius the Awakener",
+  ["loktanag"] = "Loktanag the Vile",
+  ["karrsh"] = "Karrsh the Sentinel",
+  ["trioch"] = "Trioch the Devourer",
+  ["selenaxx"] = "Selenaxx Foulheart",
+  ["ormanos"] = "Ormanos the Cracked",
+  ["chieftain"] = "Chieftain Partath",
+  ["kronn"] = "Archdruid Kronn",
+  ["axelus"] = "Broodcommander Axelus",
+}
+
+-------------------------------------------------
+-- DEFAULT DATA (raid/boss name skeleton for Raid Builder dropdowns)
+-- No tactic text — only keys used for UI population
+-------------------------------------------------
+RaidSlave.DefaultData = {
+  ["Molten Core"] = {
+    ["Incindis"] = {}, ["Lucifron"] = {}, ["Magmadar"] = {},
+    ["Smoldaris & Basalthar"] = {}, ["Garr"] = {}, ["Baron Geddon"] = {},
+    ["Shazzrah"] = {}, ["Sulfuron Harbinger"] = {},
+    ["Golemagg the Incinerator"] = {}, ["Majordomo Executus"] = {},
+    ["Sorcerer-thane Thaurissan"] = {}, ["Ragnaros"] = {},
+  },
+  ["Blackwing Lair"] = {
+    ["Razorgore the Untamed"] = {}, ["Vaelastrasz the Corrupt"] = {},
+    ["Broodlord Lashlayer"] = {}, ["Firemaw"] = {}, ["Ebonroc"] = {},
+    ["Flamegor"] = {}, ["Chromaggus"] = {}, ["Nefarian"] = {},
+    ["Ezzel Darkbrewer"] = {},
+  },
+  ["Zul'Gurub"] = {
+    ["High Priestess Jeklik"] = {}, ["High Priest Venoxis"] = {},
+    ["High Priestess Mar'li"] = {}, ["High Priest Thekal"] = {},
+    ["High Priestess Arlokk"] = {}, ["Bloodlord Mandokir"] = {},
+    ["Jin'do the Hexxer"] = {}, ["Hakkar the Soulflayer"] = {},
+    ["Edge of Madness"] = {},
+  },
+  ["Ruins of Ahn'Qiraj"] = {
+    ["Kurinnaxx"] = {}, ["General Rajaxx"] = {}, ["Moam"] = {},
+    ["Buru the Gorger"] = {}, ["Ayamiss the Hunter"] = {},
+    ["Ossirian the Unscarred"] = {},
+  },
+  ["Temple of Ahn'Qiraj"] = {
+    ["The Prophet Skeram"] = {}, ["Silithid Royalty (Bug Trio)"] = {},
+    ["Battleguard Sartura"] = {}, ["Fankriss the Unyielding"] = {},
+    ["Viscidus"] = {}, ["Princess Huhuran"] = {}, ["Twin Emperors"] = {},
+    ["Ouro"] = {}, ["C'Thun"] = {},
+  },
+  ["Onyxia's Lair"] = {
+    ["Onyxia"] = {},
+  },
+  ["Emerald Sanctum"] = {
+    ["Solnius the Awakener"] = {}, ["Itharius"] = {},
+    ["Dreamscythe & Weaver"] = {},
+  },
+  ["Naxxramas"] = {
+    ["Anub'Rekhan"] = {}, ["Grand Widow Faerlina"] = {}, ["Maexxna"] = {},
+    ["Noth the Plaguebringer"] = {}, ["Heigan the Unclean"] = {},
+    ["Loatheb"] = {}, ["Instructor Razuvious"] = {},
+    ["Gothik the Harvester"] = {}, ["The Four Horsemen"] = {},
+    ["Patchwerk"] = {}, ["Grobbulus"] = {}, ["Gluth"] = {},
+    ["Thaddius"] = {}, ["Sapphiron"] = {}, ["Kel'Thuzad"] = {},
+  },
+  ["Lower Karazhan Halls"] = {
+    ["Servant Quarters"] = {}, ["Moroes"] = {},
+    ["Maiden of Virtue"] = {}, ["Opera Event"] = {},
+    ["The Curator"] = {}, ["Nightbane"] = {},
+  },
+  ["Upper Karazhan Halls"] = {
+    ["Shade of Aran"] = {}, ["Terestian Illhoof"] = {},
+    ["Netherspite"] = {}, ["King (Chess)"] = {},
+    ["Prince Malchezaar"] = {},
+    ["Sanv Tas'dal"] = {}, ["Rupturan the Broken"] = {},
+    ["Mephistroth"] = {}, ["Echo of Medivh"] = {},
+  },
+  ["Timbermaw Hold"] = {
+    ["Rotgrowl"] = {}, ["Chieftain Partath"] = {},
+    ["Archdruid Kronn"] = {}, ["Broodcommander Axelus"] = {},
+    ["Loktanag the Vile"] = {}, ["Karrsh the Sentinel"] = {},
+    ["Trioch the Devourer"] = {}, ["Selenaxx Foulheart"] = {},
+    ["Ormanos the Cracked"] = {},
+    ["Lay-Watcher Incantagos"] = {}, ["Keeper Gnarlmoon"] = {},
+  },
+  ["World Bosses"] = {
+    ["Azuregos"] = {}, ["Lord Kazzak"] = {},
+  },
+}
+
+-------------------------------------------------
 -- SAVEDVARIABLES INIT
 -------------------------------------------------
 local function InitializeSavedVariables()
