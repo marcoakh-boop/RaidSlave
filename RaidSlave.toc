@@ -1,0 +1,15 @@
+## Interface: 11200
+## Title: |cffff6600[RaidSlave]|r
+## Version: 1.0.0
+## Notes: Raid leader toolkit: roles, loot rules, raid builder, auto-invite, composition, tank assignments.
+## Author: Marco
+## SavedVariables: RaidSlaveDB
+
+RaidSlave.lua
+
+Modules\RaidRoles.lua
+Modules\Loot.lua
+Modules\RaidBuilder.lua
+Modules\Invite.lua
+Modules\Composition.lua
+Modules\TankAssign.lua
