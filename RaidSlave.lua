@@ -81,6 +81,7 @@ local function InitializeSavedVariables()
         },
         ExportFormat = "name_class_role",
         ExportIncludeLabels = true,
+        Minimap = { angle = 215, hide = false },
       },
     }
   else
@@ -93,6 +94,7 @@ local function InitializeSavedVariables()
 
   local S = RaidSlaveDB.Settings
   if S.RoleWhisperEnabled == nil then S.RoleWhisperEnabled = true end
+  S.Minimap = S.Minimap or { angle = 215, hide = false }
   S.Loot = S.Loot or {}
   if S.Loot.AutoMasterLoot == nil then S.Loot.AutoMasterLoot = true end
   if S.Loot.AutoGroupPopup == nil then S.Loot.AutoGroupPopup = true end
@@ -595,6 +597,166 @@ SlashCmdList["RAIDSLAVE"] = function(msg)
 end
 
 -------------------------------------------------
+-- MINIMAP BUTTON
+-------------------------------------------------
+do
+  local function _MiniSV()
+    RaidSlaveDB = RaidSlaveDB or {}
+    RaidSlaveDB.Settings = RaidSlaveDB.Settings or {}
+    RaidSlaveDB.Settings.Minimap = RaidSlaveDB.Settings.Minimap or { angle = 215, hide = false }
+    return RaidSlaveDB.Settings.Minimap
+  end
+
+  local function _PlaceMini(btn)
+    local sv = _MiniSV()
+    local rad = math.rad(sv.angle or 215)
+    local r = 80
+    local x = 53 - (r * math.cos(rad))
+    local y = (r * math.sin(rad)) - 55
+    btn:ClearAllPoints()
+    btn:SetPoint("TOPLEFT", Minimap, "TOPLEFT", x, y)
+  end
+
+  -- Dropdown menu
+  local menu = CreateFrame("Frame", "RaidSlaveMinimapMenu", UIParent, "UIDropDownMenuTemplate")
+  local function _MenuInit()
+    local info
+
+    info = { isTitle = 1, text = RS_TITLE_COLOR .. "RaidSlave|r", notCheckable = 1, justifyH = "CENTER" }
+    UIDropDownMenu_AddButton(info, 1)
+
+    local add = function(text, fn, disabled)
+      info = { notCheckable = 1, text = text, disabled = disabled and true or nil, func = fn }
+      UIDropDownMenu_AddButton(info, 1)
+    end
+
+    add("Raid Builder", function()
+      if RaidSlaveRaidBuilder and RaidSlaveRaidBuilder.Open then
+        RaidSlaveRaidBuilder.Open()
+      else
+        RaidSlave:PrintError("Raid Builder module not loaded.")
+      end
+    end)
+
+    add("Auto Invite", function()
+      if RaidSlaveInvite and RaidSlaveInvite.Open then
+        RaidSlaveInvite.Open()
+      else
+        RaidSlave:PrintError("Auto-Invite module not loaded.")
+      end
+    end)
+
+    add("Composition Tool", function()
+      if RaidSlaveComposition and RaidSlaveComposition.Open then
+        RaidSlaveComposition:Open()
+      else
+        RaidSlave:PrintError("Composition module not loaded.")
+      end
+    end)
+
+    add("Tank Assignment", function()
+      if RaidSlaveTankAssign and RaidSlaveTankAssign.ToggleConfig then
+        RaidSlaveTankAssign.ToggleConfig()
+      else
+        RaidSlave:PrintError("Tank Assign module not loaded.")
+      end
+    end)
+
+    add("Export Roster", function()
+      RaidSlave:ShowExportRolesFrame()
+    end)
+
+    add("Post Role Summary", function()
+      RaidSlave:PostRoleSummary()
+    end)
+
+    add("Loot Settings", function()
+      if RaidSlaveLoot_ShowPopup then
+        RaidSlaveLoot_ShowPopup()
+      else
+        RaidSlave:PrintError("Loot module not loaded.")
+      end
+    end)
+
+    add("Options", function()
+      RaidSlave:ShowOptionsFrame()
+    end)
+
+    add("Help", function()
+      RaidSlave:PrintHelp()
+    end)
+  end
+  menu.initialize = _MenuInit
+  menu.displayMode = "MENU"
+
+  -- The button
+  local btn = CreateFrame("Button", "RaidSlaveMinimapButton", Minimap)
+  btn:SetFrameStrata("MEDIUM")
+  btn:SetWidth(31); btn:SetHeight(31)
+
+  local overlay = btn:CreateTexture(nil, "OVERLAY")
+  overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+  overlay:SetWidth(54); overlay:SetHeight(54)
+  overlay:SetPoint("TOPLEFT", 0, 0)
+
+  local icon = btn:CreateTexture(nil, "BACKGROUND")
+  icon:SetTexture("Interface\\Icons\\Spell_Nature_Reincarnation")
+  icon:SetTexCoord(0.05, 0.95, 0.05, 0.95)
+  icon:SetWidth(20); icon:SetHeight(20)
+  icon:SetPoint("TOPLEFT", 6, -6)
+
+  local hlt = btn:CreateTexture(nil, "HIGHLIGHT")
+  hlt:SetTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+  hlt:SetBlendMode("ADD")
+  hlt:SetAllPoints(btn)
+
+  btn:RegisterForDrag("LeftButton", "RightButton")
+  btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+
+  -- Drag to reposition around minimap
+  btn:SetScript("OnDragStart", function()
+    btn:SetScript("OnUpdate", function()
+      local x, y = GetCursorPosition()
+      local mx, my = Minimap:GetCenter()
+      local scale = Minimap:GetEffectiveScale()
+      local ang = math.deg(math.atan2(y / scale - my, x / scale - mx))
+      _MiniSV().angle = ang
+      _PlaceMini(btn)
+    end)
+  end)
+  btn:SetScript("OnDragStop", function() btn:SetScript("OnUpdate", nil) end)
+
+  -- Click opens the dropdown menu
+  btn:SetScript("OnClick", function()
+    ToggleDropDownMenu(1, nil, menu, "RaidSlaveMinimapButton", 0, 0)
+  end)
+
+  -- Tooltip
+  btn:SetScript("OnEnter", function()
+    GameTooltip:SetOwner(btn, "ANCHOR_LEFT")
+    GameTooltip:AddLine(RS_TITLE_COLOR .. "RaidSlave|r", 1, 1, 1)
+    GameTooltip:AddLine("Click to open menu", 0.9, 0.9, 0.9)
+    GameTooltip:AddLine("Drag to reposition", 0.7, 0.7, 0.7)
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine("|cffffff00/rs help|r for all commands", 0.7, 0.7, 0.7)
+    GameTooltip:Show()
+  end)
+  btn:SetScript("OnLeave", function()
+    if GameTooltip:IsOwned(btn) then GameTooltip:Hide() end
+  end)
+
+  -- Init on addon load
+  local ev = CreateFrame("Frame")
+  ev:RegisterEvent("ADDON_LOADED")
+  ev:SetScript("OnEvent", function()
+    if event ~= "ADDON_LOADED" or arg1 ~= "RaidSlave" then return end
+    local sv = _MiniSV()
+    if sv.hide then btn:Hide() else btn:Show() end
+    _PlaceMini(btn)
+  end)
+end
+
+-------------------------------------------------
 -- EVENT HANDLING
 -------------------------------------------------
 local rsEventFrame = CreateFrame("Frame")
@@ -605,7 +767,7 @@ rsEventFrame:SetScript("OnEvent", function()
     InitializeSavedVariables()
     RunLater(1, function()
       local cf = DEFAULT_CHAT_FRAME or ChatFrame1
-      cf:AddMessage(RS_TITLE_COLOR .. "RaidSlave|r loaded. Use |cffffff00/rs|r for commands.")
+      cf:AddMessage(RS_TITLE_COLOR .. "RaidSlave|r loaded. Use |cffffff00/rs|r or click the minimap icon.")
     end)
   end
 end)
